@@ -9,8 +9,18 @@ def save_plot(plot_path):
     plt.close()
 
 
+def plot_bar_chart(df, x_col, y_col, colors, title, xlabel, ylabel, plot_path):
+    plt.figure(figsize=(10, 6))
+    plt.bar(df[x_col], df[y_col], color=colors)
+    plt.title(title, fontsize=16)
+    plt.xlabel(xlabel, fontsize=12)
+    plt.ylabel(ylabel, fontsize=12)
+    plt.xticks(rotation=45, ha='right')
+    save_plot(plot_path)
+
+
 def draw_anomalies(df, anomaly_threshold):
-    df['mean_difference'] = abs(df['floor_mean'] - df['ceiling_mean'])
+    df['mean_difference'] = (df['floor_mean'] - df['ceiling_mean']).abs()
     anomalies = df[df['mean_difference'] > anomaly_threshold]
 
     if not anomalies.empty:
@@ -18,17 +28,14 @@ def draw_anomalies(df, anomaly_threshold):
     else:
         print("No anomalies detected.")
 
-    plt.figure(figsize=(10, 6))
     colors = ['red' if diff > anomaly_threshold else 'blue' for diff in df['mean_difference']]
-    plt.bar(df['name'], df['mean_difference'], color=colors)
+    plot_bar_chart(df, 'name', 'mean_difference', colors,
+                   f'Difference between mean deviations for floor and ceiling (Total anomalies: {anomalies.shape[0]})',
+                   'Room', 'Difference between mean deviations',
+                   os.path.join('plots', 'comparison_anomaly.png'))
 
-    plt.title(f'Difference between mean deviations for floor and ceiling (Total anomalies: {anomalies.shape[0]})', fontsize=16)
-    plt.xlabel('Room', fontsize=12)
-    plt.ylabel('Difference between mean deviations', fontsize=12)
-    plt.xticks(rotation=45, ha='right')
+    return os.path.join('plots', 'comparison_anomaly.png')
 
-    save_plot(plot_path := os.path.join('plots', 'comparison_anomaly.png'))
-    return plot_path
 
 def draw_comparison_plots(df):
     comparisons = [
@@ -38,19 +45,18 @@ def draw_comparison_plots(df):
     ]
 
     plot_paths = []
-
-    for comp in comparisons:
+    for label, floor_col, ceiling_col in comparisons:
         plt.figure(figsize=(10, 6))
-        plt.plot(df['name'], df[comp[0]], marker='o', linestyle='-', label='Mean')
-        plt.plot(df['name'], df[comp[1]], marker='o', linestyle='-', label='Floor Mean')
-        plt.plot(df['name'], df[comp[2]], marker='o', linestyle='-', label='Ceiling Mean')
+        plt.plot(df['name'], df[label], marker='o', label='Mean')
+        plt.plot(df['name'], df[floor_col], marker='o', label='Floor')
+        plt.plot(df['name'], df[ceiling_col], marker='o', label='Ceiling')
         plt.xlabel('Room Name')
         plt.ylabel('Degrees')
-        plt.title(f'Comparison of {comp[0]} with Floor and Ceiling Mean')
+        plt.title(f'Comparison of {label} with Floor and Ceiling')
         plt.xticks(rotation=45, ha='right')
         plt.legend()
 
-        plot_path = os.path.join('plots', f'comparison_{comp[0]}.png')
+        plot_path = os.path.join('plots', f'comparison_{label}.png')
         save_plot(plot_path)
         plot_paths.append(plot_path)
 
@@ -71,29 +77,15 @@ def generate_statistics(df):
     for key, value in stats.items():
         print(f"\n{key}:\n", value)
 
-    plt.figure(figsize=(12, 6))
-    stats['Mean Floor Error'].plot(kind='bar', color='blue', label='Mean Floor Error')
-    stats['Mean Ceiling Error'].plot(kind='bar', color='green', label='Mean Ceiling Error', alpha=0.7)
-    plt.title('Average Mean Error per Room')
-    plt.xlabel('Room')
-    plt.ylabel('Average Error')
-    plt.xticks(rotation=45, ha='right')
-    plt.legend()
-    save_plot(plot_path1 := os.path.join('plots', 'average_mean_error_per_room.png'))
+    plot_bar_chart(df, 'name', 'floor_mean', 'blue', 'Average Mean Error per Room', 'Room', 'Average Error',
+                   os.path.join('plots', 'average_mean_error_per_room.png'))
 
-    plt.figure(figsize=(12, 6))
-    stats['Max Floor Error'].plot(kind='bar', color='lightcoral', label='Max Floor Error')
-    stats['Max Ceiling Error'].plot(kind='bar', color='green', label='Max Ceiling Error', alpha=0.7)
-    stats['Min Floor Error'].plot(kind='bar', color='blue', label='Min Floor Error', alpha=0.7)
-    stats['Min Ceiling Error'].plot(kind='bar', color='deepskyblue', label='Min Ceiling Error', alpha=0.7)
-    plt.title('Max and Min Errors per Room')
-    plt.xlabel('Room')
-    plt.ylabel('Error')
-    plt.xticks(rotation=45, ha='right')
-    plt.legend()
-    save_plot(plot_path2 := os.path.join('plots', 'max_min_errors_per_room.png'))
-    
-    return plot_path1, plot_path2
+    plot_bar_chart(df, 'name', 'floor_max', 'lightcoral', 'Max and Min Errors per Room', 'Room', 'Error',
+                   os.path.join('plots', 'max_min_errors_per_room.png'))
+
+    return (os.path.join('plots', 'average_mean_error_per_room.png'),
+            os.path.join('plots', 'max_min_errors_per_room.png'))
+
 
 def draw_plots(json_path):
     try:
@@ -102,8 +94,7 @@ def draw_plots(json_path):
         print(f"Error reading JSON file: {e}")
         return []
 
-    if not os.path.exists('plots'):
-        os.makedirs('plots')
+    os.makedirs('plots', exist_ok=True)
 
     plot_paths = draw_comparison_plots(df)
     plot_paths += generate_statistics(df)
