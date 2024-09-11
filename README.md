@@ -21,10 +21,10 @@ A Python script that reads a JSON file of room data, visualizes various statisti
    cd DokuSketch_testtask
    ```
 
-2. Create a virtual environment (optional but recommended):
+2. Create a virtual environment (optional):
    ```bash
    python3 -m venv venv
-   source venv/bin/activate   # On Windows: venv\\Scripts\\activate
+   source venv/bin/activate   # for Windows: venv\\Scripts\\activate
    ```
 
 3. Install the required dependencies:
@@ -35,8 +35,6 @@ A Python script that reads a JSON file of room data, visualizes various statisti
    Ensure the following libraries are included in your `requirements.txt`:
    - `pandas 2.2.1`
    - `matplotlib 3.8.4`
-   - `unittest`
-   - `unittest.mock`
 
 ## Usage
 
@@ -45,19 +43,19 @@ A Python script that reads a JSON file of room data, visualizes various statisti
 The repository provides the functions in `function.py`:
 
 1. **draw_plots(json_path)**:
-   - Reads a JSON file and generates plots that are comparing floor and ceiling statistics.
-   - Plots are saved in a folder named `/plots/`.
+   - Reads a JSON file and generates plots that are comparing floor and ceiling statistics
+   - Plots are saved in a folder named `/plots/`
 
 2. **generate_statistics(df)**:
-   - Computes and prints mean, max, and min errors for floor and ceiling data.
-   - Generates bar plots for average mean errors and max/min errors per room.
+   - Computes and prints mean, max, and min errors for floor and ceiling data
+   - Generates bar plots for average mean errors and max/min errors per room
 
 3. **draw_anomalies(df, anomaly_threshold)**:
-   - Detects and plots rooms with anomalies based on a specified threshold for differences between floor and ceiling mean values.
+   - Detects and plots rooms with anomalies based on a specified threshold for differences between floor and ceiling mean values
 
 ### Running the Script
 
-You can generate plots and perform analysis by simply running the following:
+You can generate plots and perform analysis by running the following:
 
 ```py
 from function import draw_plots
@@ -65,13 +63,13 @@ json_path = "deviation.json" #put the path to your json
 draw_plots(json_path)
 ```
 
-This will read the JSON file provided in the `json_path` and generate plots in the `plots` directory.
+This will read the JSON file provided in the `json_path` and generate plots in the `plots` directory
 
-Make sure to have a valid JSON file with the required structure (name, gt_corners, rb_corners, mean, max, min etc.).
+Make sure to have a valid JSON file with the required structure (name, gt_corners, rb_corners, mean, max, min etc.)
 
 ### Running Unit Tests
 
-Unit tests are provided in the `test_function.py` file, which uses Python’s `unittest` framework and mocks certain functions to test the script.
+Unit tests are provided in the `test_function.py` file, which uses Python’s `unittest` framework and mocks certain functions to test the script
 
 To run the unit tests, use:
 
@@ -80,12 +78,12 @@ python -m unittest discover
 ```
 
 The tests verify that:
-- JSON reading and plotting functions work as expected.
-- The statistics and anomaly detection functions execute correctly.
+- JSON reading and plotting functions work as expected
+- The statistics and anomaly detection functions execute correctly
 
 ### Jupyter Notebook
 
-You can explore the functionality interactively using the provided Jupyter notebook (`Notebook.ipynb`). This notebook demonstrates how to load a JSON file and generate visualizations based on JSON data.
+You can explore the functionality interactively using the provided Jupyter notebook (`Notebook.ipynb`). This notebook demonstrates how to load a JSON file and generate visualizations based on JSON data
 
 To start the notebook, run:
 
@@ -93,12 +91,13 @@ To start the notebook, run:
 jupyter notebook
 ```
 
-Open `Notebook.ipynb` from the Jupyter interface.
+Open `Notebook.ipynb` from the Jupyter interface
 
 ## File Structure
 
-- `function.py`: Main Python script that contains the `draw_plots` function.
-- `test_function.py`: Unit tests to verify the functionality of the methods in `function.py`.
-- `Notebook.ipynb`: Jupyter notebook for interactive data analysis and visualization.
-- `plots/`: Directory where generated plots are saved as .png pictures.
-- `requirements.txt`: List of dependencies required to run the project.
+- `function.py`: Main Python script that contains the `draw_plots` function
+- `test_function.py`: Unit tests to verify the functionality of the methods in `function.py`
+- `Notebook.ipynb`: Jupyter notebook for interactive data analysis and visualization
+- `plots/`: Directory where generated plots are saved as .png pictures
+- `requirements.txt`: List of dependencies required to run the project
+- `deviation.json`: JSON data using for drawing plots
