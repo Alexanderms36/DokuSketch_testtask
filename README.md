@@ -45,6 +45,7 @@ The repository provides the functions in `function.py`:
 1. **draw_plots(json_path)**:
    - Reads a JSON file and generates plots that are comparing floor and ceiling statistics
    - Plots are saved in a folder named `/plots/`
+   - Returns a list of plot pathes
 
 2. **generate_statistics(df)**:
    - Computes and prints mean, max, and min errors for floor and ceiling data
