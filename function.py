@@ -94,10 +94,12 @@ def draw_plots(json_path):
         print(f"Error reading JSON file: {e}")
         return []
 
+    threshold = 10
+
     os.makedirs('plots', exist_ok=True)
 
     plot_paths = draw_comparison_plots(df)
     plot_paths += generate_statistics(df)
-    plot_paths.append(draw_anomalies(df, 10))
+    plot_paths.append(draw_anomalies(df, threshold))
 
     return plot_paths
